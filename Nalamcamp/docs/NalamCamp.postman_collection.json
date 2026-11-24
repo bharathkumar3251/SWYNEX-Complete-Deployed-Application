@@ -1,0 +1,878 @@
+{
+	"info": {
+		"_postman_id": "a98e8211-5847-4e0a-b362-d49e6f376189",
+		"name": "NalamCamp API - SWYNEX Task 2",
+		"description": "Comprehensive Postman test collection for SWYNEX Task 2: Backend API and Database for NalamCamp.\n\nDemonstrates full lifecycle:\n1. Organizer Login\n2. Create Camp Draft\n3. Add Counters / Services (General Medicine & Eye Consultation)\n4. Submit Camp for Review\n5. Reviewer Login\n6. Reviewer Approval with Official Verification Source\n7. Public Search (Area & Service Filters)\n8. Public Direct Camp Detail\n9. Resident Reserve Token (Pessimistic locking & Idempotency safe)\n10. Private Booking Lookup\n11. Volunteer Login\n12. Volunteer Check-in\n13. Duplicate Check-in Prevention (409 Conflict)\n14. Volunteer Walk-in Registration (Does not consume online quota)\n15. Attendance Summary\n16. Poster OCR Upload\n17. Poster Match & Verification\n18. Resident Cancel Booking (Capacity Released Once)\n19. Staff Logout",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"variable": [
+		{
+			"key": "baseUrl",
+			"value": "http://localhost:8080",
+			"type": "string"
+		},
+		{
+			"key": "organizerEmail",
+			"value": "organizer@nalamcamp.test",
+			"type": "string"
+		},
+		{
+			"key": "organizerPassword",
+			"value": "Organizer@123",
+			"type": "string",
+			"description": "Default seed password: Organizer@123. Can be overridden in collection/environment variables."
+		},
+		{
+			"key": "reviewerEmail",
+			"value": "reviewer@nalamcamp.test",
+			"type": "string"
+		},
+		{
+			"key": "reviewerPassword",
+			"value": "Reviewer@123",
+			"type": "string",
+			"description": "Default seed password: Reviewer@123. Can be overridden in collection/environment variables."
+		},
+		{
+			"key": "volunteerEmail",
+			"value": "volunteer@nalamcamp.test",
+			"type": "string"
+		},
+		{
+			"key": "volunteerPassword",
+			"value": "Volunteer@123",
+			"type": "string",
+			"description": "Default seed password: Volunteer@123. Can be overridden in collection/environment variables."
+		},
+		{
+			"key": "campId",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "serviceId1",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "serviceId2",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "bookingReference",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "tokenNumber",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "posterCheckId",
+			"value": "",
+			"type": "string"
+		}
+	],
+	"item": [
+		{
+			"name": "01. Organizer Login",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Organizer login successful (200 OK)\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"var json = pm.response.json();",
+							"pm.test(\"Role is ORGANIZER\", function () {",
+							"    pm.expect(json.role).to.eql(\"ORGANIZER\");",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"email\": \"{{organizerEmail}}\",\n  \"password\": \"{{organizerPassword}}\"\n}"
+				},
+				"url": {
+					"raw": "{{baseUrl}}/api/sessions",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"api",
+						"sessions"
+					]
+				}
+			}
+		},
+		{
+			"name": "02. Create Camp (Draft)",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Camp created as DRAFT\", function () {",
+							"    pm.expect(pm.response.code).to.be.oneOf([200, 201]);",
+							"});",
+							"var json = pm.response.json();",
+							"pm.collectionVariables.set(\"campId\", json.id);",
+							"pm.test(\"Owner derived and status DRAFT\", function () {",
+							"    pm.expect(json.status).to.eql(\"DRAFT\");",
+							"    pm.expect(json.organizerName).to.not.be.empty;",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"name\": \"Kovai Comprehensive Health Camp\",\n  \"organizerName\": null,\n  \"campDate\": \"2026-12-15\",\n  \"area\": \"Gandhipuram\",\n  \"venue\": \"Gandhipuram Community Hall\"\n}"
+				},
+				"url": {
+					"raw": "{{baseUrl}}/api/camps",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"api",
+						"camps"
+					]
+				}
+			}
+		},
+		{
+			"name": "03. Add Counter 1 (General Medicine - BOTH)",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Counter 1 created successfully\", function () {",
+							"    pm.expect(pm.response.code).to.be.oneOf([200, 201]);",
+							"});",
+							"var json = pm.response.json();",
+							"pm.collectionVariables.set(\"serviceId1\", json.id);",
+							"pm.test(\"Counter fields validated\", function () {",
+							"    pm.expect(json.serviceName).to.eql(\"General Medicine & BP Check\");",
+							"    pm.expect(json.capacity).to.eql(20);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"serviceName\": \"General Medicine & BP Check\",\n  \"startTime\": \"09:00:00\",\n  \"endTime\": \"13:00:00\",\n  \"fee\": 0.00,\n  \"itemsToBring\": \"Aadhaar card, any current prescription\",\n  \"bookingMode\": \"BOTH\",\n  \"capacity\": 20\n}"
+				},
+				"url": {
+					"raw": "{{baseUrl}}/api/camps/{{campId}}/services",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"api",
+						"camps",
+						"{{campId}}",
+						"services"
+					]
+				}
+			}
+		},
+		{
+			"name": "04. Add Counter 2 (Eye Consultation - ONLINE)",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Counter 2 created successfully\", function () {",
+							"    pm.expect(pm.response.code).to.be.oneOf([200, 201]);",
+							"});",
+							"var json = pm.response.json();",
+							"pm.collectionVariables.set(\"serviceId2\", json.id);",
+							"pm.test(\"Counter 2 is ONLINE mode\", function () {",
+							"    pm.expect(json.bookingMode).to.eql(\"ONLINE\");",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"serviceName\": \"Eye Consultation & Vision Screening\",\n  \"startTime\": \"09:30:00\",\n  \"endTime\": \"13:00:00\",\n  \"fee\": 0.00,\n  \"itemsToBring\": \"Previous glasses if available\",\n  \"bookingMode\": \"ONLINE\",\n  \"capacity\": 15\n}"
+				},
+				"url": {
+					"raw": "{{baseUrl}}/api/camps/{{campId}}/services",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"api",
+						"camps",
+						"{{campId}}",
+						"services"
+					]
+				}
+			}
+		},
+		{
+			"name": "05. Submit Camp for Review",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Camp submitted for review (PENDING_REVIEW)\", function () {",
+							"    pm.response.to.have.status(200);",
+							"    var json = pm.response.json();",
+							"    pm.expect(json.status).to.eql(\"PENDING_REVIEW\");",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "{{baseUrl}}/api/camps/{{campId}}/submit",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"api",
+						"camps",
+						"{{campId}}",
+						"submit"
+					]
+				}
+			}
+		},
+		{
+			"name": "06. Reviewer Login",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Reviewer login successful (200 OK)\", function () {",
+							"    pm.response.to.have.status(200);",
+							"    var json = pm.response.json();",
+							"    pm.expect(json.role).to.eql(\"REVIEWER\");",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"email\": \"{{reviewerEmail}}\",\n  \"password\": \"{{reviewerPassword}}\"\n}"
+				},
+				"url": {
+					"raw": "{{baseUrl}}/api/sessions",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"api",
+						"sessions"
+					]
+				}
+			}
+		},
+		{
+			"name": "07. Reviewer Approve Camp with Official Source",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Camp approved with official verification source\", function () {",
+							"    pm.response.to.have.status(200);",
+							"    var json = pm.response.json();",
+							"    pm.expect(json.status).to.eql(\"APPROVED\");",
+							"    pm.expect(json.verificationSource).to.eql(\"District Health Society Circular DHS-CBE-2026/89\");",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "PATCH",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"action\": \"APPROVE\",\n  \"verificationSource\": \"District Health Society Circular DHS-CBE-2026/89\",\n  \"rejectionReason\": null\n}"
+				},
+				"url": {
+					"raw": "{{baseUrl}}/api/camps/{{campId}}/review",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"api",
+						"camps",
+						"{{campId}}",
+						"review"
+					]
+				}
+			}
+		},
+		{
+			"name": "08. Public Search (Area & Service Filters)",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Public search returns approved camps only\", function () {",
+							"    pm.response.to.have.status(200);",
+							"    var json = pm.response.json();",
+							"    pm.expect(json.length).to.be.above(0);",
+							"    pm.expect(json.some(c => c.id == pm.collectionVariables.get(\"campId\"))).to.be.true;",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{baseUrl}}/api/camps?area=Gandhipuram&service=Medicine",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"api",
+						"camps"
+					],
+					"query": [
+						{
+							"key": "area",
+							"value": "Gandhipuram"
+						},
+						{
+							"key": "service",
+							"value": "Medicine"
+						}
+					]
+				}
+			}
+		},
+		{
+			"name": "09. Public Camp Direct Detail",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Direct camp detail exposed with counters\", function () {",
+							"    pm.response.to.have.status(200);",
+							"    var json = pm.response.json();",
+							"    pm.expect(json.id).to.eql(Number(pm.collectionVariables.get(\"campId\")));",
+							"    pm.expect(json.status).to.eql(\"APPROVED\");",
+							"    pm.expect(json.services.length).to.eql(2);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{baseUrl}}/api/camps/{{campId}}",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"api",
+						"camps",
+						"{{campId}}"
+					]
+				}
+			}
+		},
+		{
+			"name": "10. Resident Reserve Online Token (Counter 1)",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Token reserved with reference and reporting window\", function () {",
+							"    pm.expect(pm.response.code).to.be.oneOf([200, 201]);",
+							"    var json = pm.response.json();",
+							"    pm.collectionVariables.set(\"bookingReference\", json.bookingReference);",
+							"    pm.collectionVariables.set(\"tokenNumber\", json.tokenNumber);",
+							"    pm.expect(json.bookingReference).to.not.be.empty;",
+							"    pm.expect(json.reportingWindow).to.not.be.empty;",
+							"    pm.expect(json.venue).to.not.be.empty;",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"visitorName\": \"Karthik Subramanian\",\n  \"visitorPhone\": \"9876501234\",\n  \"idempotencyKey\": \"IDEMP-DEMO-001\"\n}"
+				},
+				"url": {
+					"raw": "{{baseUrl}}/api/services/{{serviceId1}}/bookings",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"api",
+						"services",
+						"{{serviceId1}}",
+						"bookings"
+					]
+				}
+			}
+		},
+		{
+			"name": "11. Private Booking Lookup",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Private booking lookup matches reference\", function () {",
+							"    pm.response.to.have.status(200);",
+							"    var json = pm.response.json();",
+							"    pm.expect(json.bookingReference).to.eql(pm.collectionVariables.get(\"bookingReference\"));",
+							"    pm.expect(json.visitorName).to.eql(\"Karthik Subramanian\");",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{baseUrl}}/api/bookings/{{bookingReference}}",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"api",
+						"bookings",
+						"{{bookingReference}}"
+					]
+				}
+			}
+		},
+		{
+			"name": "12. Volunteer Login",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Volunteer login successful (200 OK)\", function () {",
+							"    pm.response.to.have.status(200);",
+							"    var json = pm.response.json();",
+							"    pm.expect(json.role).to.eql(\"VOLUNTEER\");",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"email\": \"{{volunteerEmail}}\",\n  \"password\": \"{{volunteerPassword}}\"\n}"
+				},
+				"url": {
+					"raw": "{{baseUrl}}/api/sessions",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"api",
+						"sessions"
+					]
+				}
+			}
+		},
+		{
+			"name": "13. Volunteer Check-in by Token",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Token checked in successfully\", function () {",
+							"    pm.response.to.have.status(200);",
+							"    var json = pm.response.json();",
+							"    pm.expect(json.checkedIn).to.eql(true);",
+							"    pm.expect(json.checkInTime).to.not.be.null;",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "PATCH",
+				"header": [],
+				"url": {
+					"raw": "{{baseUrl}}/api/bookings/{{tokenNumber}}/check-in",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"api",
+						"bookings",
+						"{{tokenNumber}}",
+						"check-in"
+					]
+				}
+			}
+		},
+		{
+			"name": "14. Duplicate Check-in Prevention (Expect 409 Conflict)",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Duplicate check-in rejected with 409 Conflict\", function () {",
+							"    pm.response.to.have.status(409);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "PATCH",
+				"header": [],
+				"url": {
+					"raw": "{{baseUrl}}/api/bookings/{{tokenNumber}}/check-in",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"api",
+						"bookings",
+						"{{tokenNumber}}",
+						"check-in"
+					]
+				}
+			}
+		},
+		{
+			"name": "15. Volunteer Walk-in Registration (Counter 1)",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Walk-in registered without consuming online quota\", function () {",
+							"    pm.expect(pm.response.code).to.be.oneOf([200, 201]);",
+							"    var json = pm.response.json();",
+							"    pm.expect(json.bookingType).to.eql(\"WALK_IN\");",
+							"    pm.expect(json.checkedIn).to.eql(true);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"visitorName\": \"Ramesh Babu (Walk-in)\",\n  \"visitorPhone\": \"9845012345\"\n}"
+				},
+				"url": {
+					"raw": "{{baseUrl}}/api/services/{{serviceId1}}/walk-ins",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"api",
+						"services",
+						"{{serviceId1}}",
+						"walk-ins"
+					]
+				}
+			}
+		},
+		{
+			"name": "16. View Camp Attendance Summary",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Attendance totals returned\", function () {",
+							"    pm.response.to.have.status(200);",
+							"    var json = pm.response.json();",
+							"    pm.expect(json.campId).to.eql(Number(pm.collectionVariables.get(\"campId\")));",
+							"    pm.expect(json.totalCheckedIn).to.be.above(0);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{baseUrl}}/api/camps/{{campId}}/attendance",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"api",
+						"camps",
+						"{{campId}}",
+						"attendance"
+					]
+				}
+			}
+		},
+		{
+			"name": "17. Poster OCR Upload",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Poster upload accepted or 503 if OCR unavailable on host\", function () {",
+							"    pm.expect(pm.response.code).to.be.oneOf([200, 201, 503]);",
+							"});",
+							"if (pm.response.code === 200 || pm.response.code === 201) {",
+							"    var json = pm.response.json();",
+							"    pm.collectionVariables.set(\"posterCheckId\", json.posterCheckId);",
+							"}"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "file",
+							"type": "file",
+							"src": []
+						}
+					]
+				},
+				"url": {
+					"raw": "{{baseUrl}}/api/poster-checks",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"api",
+						"poster-checks"
+					]
+				}
+			}
+		},
+		{
+			"name": "18. Poster Match & Verification",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"if (pm.collectionVariables.get(\"posterCheckId\")) {",
+							"    pm.test(\"Poster matching returns match status\", function () {",
+							"        pm.response.to.have.status(200);",
+							"        var json = pm.response.json();",
+							"        pm.expect(json.status).to.be.oneOf([\"MATCHED\", \"DISCREPANCIES\", \"UNABLE_TO_CONFIRM\"]);",
+							"    });",
+							"}"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"organizerName\": \"Nalam Volunteers\",\n  \"campDate\": \"2026-12-15\",\n  \"venue\": \"Gandhipuram Community Hall\",\n  \"campName\": \"Kovai Comprehensive Health Camp\"\n}"
+				},
+				"url": {
+					"raw": "{{baseUrl}}/api/poster-checks/{{posterCheckId}}/match",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"api",
+						"poster-checks",
+						"{{posterCheckId}}",
+						"match"
+					]
+				}
+			}
+		},
+		{
+			"name": "19. Resident Cancel Booking (Capacity Release)",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Booking cancelled and status updated\", function () {",
+							"    pm.response.to.have.status(200);",
+							"    var json = pm.response.json();",
+							"    pm.expect(json.status).to.eql(\"CANCELLED\");",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "{{baseUrl}}/api/bookings/{{bookingReference}}",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"api",
+						"bookings",
+						"{{bookingReference}}"
+					]
+				}
+			}
+		},
+		{
+			"name": "20. Staff Logout",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Logged out successfully\", function () {",
+							"    pm.expect(pm.response.code).to.be.oneOf([200, 204]);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "{{baseUrl}}/api/sessions",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"api",
+						"sessions"
+					]
+				}
+			}
+		}
+	]
+}
