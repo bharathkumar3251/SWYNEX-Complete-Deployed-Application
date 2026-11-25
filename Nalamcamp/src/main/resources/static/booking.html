@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NalamCamp | நலமுகாம் — Online Token Reservation Wizard</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <div class="gov-top-bar">
+    <div class="gov-top-inner">
+      <div class="gov-initiative">GOVERNMENT OF TAMIL NADU INITIATIVE | தமிழ்நாடு அரசு முன்னெடுப்பு</div>
+      <div class="gov-utility-links">
+        <span class="gov-clock" id="govClock"></span>
+        <button type="button" class="gov-utility-btn" id="btnTextNormal" title="Normal text">A</button>
+        <button type="button" class="gov-utility-btn" id="btnTextLarge" title="Large text">A+</button>
+        <button type="button" class="gov-utility-btn" id="btnTextXLarge" title="Extra large text">A++</button>
+        <button type="button" class="gov-utility-btn" id="btnContrast" title="Toggle high contrast">Contrast</button>
+      </div>
+    </div>
+  </div>
+
+  <header class="gov-masthead">
+    <div class="gov-masthead-inner">
+      <a href="index.html" class="gov-brand">
+        <div class="gov-emblem">ந</div>
+        <div class="gov-brand-titles">
+          <span class="gov-title-en">NALAMCAMP PORTAL</span>
+          <span class="gov-title-ta">நலமுகாம் பொது மருத்துவ சேவை தளம்</span>
+          <span class="gov-sub-title">Public Medical Camp Verification & Citizen Token System</span>
+        </div>
+      </a>
+      <div class="gov-helpline-box">
+        <div class="helpline-item">
+          <span class="helpline-label">Medical Helpline</span>
+          <span class="helpline-number">104</span>
+        </div>
+        <div class="helpline-item">
+          <span class="helpline-label">Emergency Ambulance</span>
+          <span class="helpline-number">108</span>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <nav class="gov-nav-bar" aria-label="Main Navigation">
+    <div class="gov-nav-inner">
+      <a href="index.html">Home / முகப்பு</a>
+      <a href="booking.html" class="active">Book Token (Step-by-Step) / முன்பதிவு</a>
+      <a href="token.html">My Token / ரசீது</a>
+      <a href="poster-check.html">Verify Poster / சுவரொட்டி சரிபார்ப்பு</a>
+      <a href="staff.html">Staff Login / துறை உள்நுழைவு</a>
+    </div>
+  </nav>
+
+  <div class="gov-ticker">
+    <div class="gov-ticker-inner">
+      <span class="ticker-tag">Notice</span>
+      <span>Token reservation is 100% free of charge. Please arrive 15 minutes before your reporting window with necessary medical cards.</span>
+    </div>
+  </div>
+
+  <div class="breadcrumbs">
+    <a href="index.html">Home</a> &gt; <span>Citizen Services</span> &gt; <span class="current">Online Token Reservation Wizard</span>
+  </div>
+
+  <main>
+    <h1>Online Token Reservation Wizard</h1>
+    <p class="lead-text">Reserve your consultation slot in 4 sequential steps with verified public health oversight.</p>
+
+    <div class="stepper-wrapper" aria-label="Reservation Progress">
+      <div class="step-item active" id="stepNode1">
+        <div class="step-circle" id="circle1">1</div>
+        <div class="step-details">
+          <span class="step-number">Step 1</span>
+          <span class="step-title">Select Service</span>
+        </div>
+      </div>
+      <div class="step-line" id="line1"></div>
+      <div class="step-item" id="stepNode2">
+        <div class="step-circle" id="circle2">2</div>
+        <div class="step-details">
+          <span class="step-number">Step 2</span>
+          <span class="step-title">Resident Details</span>
+        </div>
+      </div>
+      <div class="step-line" id="line2"></div>
+      <div class="step-item" id="stepNode3">
+        <div class="step-circle" id="circle3">3</div>
+        <div class="step-details">
+          <span class="step-number">Step 3</span>
+          <span class="step-title">Review &amp; Declare</span>
+        </div>
+      </div>
+      <div class="step-line" id="line3"></div>
+      <div class="step-item" id="stepNode4">
+        <div class="step-circle" id="circle4">4</div>
+        <div class="step-details">
+          <span class="step-number">Step 4</span>
+          <span class="step-title">Official Token Slip</span>
+        </div>
+      </div>
+    </div>
+
+    <div id="wizardFeedback" role="status" aria-live="polite"></div>
+
+    <section id="step1Panel" class="wizard-panel active" aria-labelledby="step1Heading">
+      <div class="card">
+        <div class="card-header-bar">
+          <h2 id="step1Heading">Step 1: Select Approved Camp and Service Counter</h2>
+          <span class="badge badge-info">Service Selection</span>
+        </div>
+
+        <div id="preselectedCampCard" style="display: none; margin-bottom: 1.5rem;" class="review-summary-card">
+          <div class="review-row">
+            <span class="review-label">Selected Camp</span>
+            <span class="review-value" id="preCampName">-</span>
+          </div>
+          <div class="review-row">
+            <span class="review-label">Organizer</span>
+            <span class="review-value" id="preCampOrganizer">-</span>
+          </div>
+          <div class="review-row">
+            <span class="review-label">Camp Date &amp; Area</span>
+            <span class="review-value" id="preCampDateArea">-</span>
+          </div>
+          <div class="review-row">
+            <span class="review-label">Venue</span>
+            <span class="review-value" id="preCampVenue">-</span>
+          </div>
+          <div class="review-row">
+            <span class="review-label">Official Circular Source</span>
+            <span class="review-value" id="preCampSource">-</span>
+          </div>
+        </div>
+
+        <div id="campSelectionControls">
+          <div class="form-row">
+            <div class="form-group">
+              <label for="selectCampDropdown">Choose Medical Camp <span class="req">*</span></label>
+              <select id="selectCampDropdown" required>
+                <option value="">-- Choose Approved Camp --</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <div id="serviceSelectionSection" style="margin-top: 1.25rem;">
+          <h3 style="margin-bottom: 0.75rem;">Available Service Counters</h3>
+          <p class="form-hint" style="margin-bottom: 1rem;">Select one medical service counter for this token. Each counter operates on individual timings.</p>
+          <div id="counterSelectionList">
+            <div class="alert alert-info">Please choose an approved camp above to inspect its active service counters.</div>
+          </div>
+        </div>
+
+        <div class="step-actions">
+          <a href="index.html" class="btn btn-secondary">← Back to Camp Listings</a>
+          <button type="button" class="btn btn-primary btn-lg" id="btnStep1Next">Proceed to Step 2: Resident Details →</button>
+        </div>
+      </div>
+    </section>
+
+    <section id="step2Panel" class="wizard-panel" aria-labelledby="step2Heading">
+      <div class="card">
+        <div class="card-header-bar">
+          <h2 id="step2Heading">Step 2: Enter Resident / Patient Particulars</h2>
+          <span class="badge badge-info">Patient Identity</span>
+        </div>
+        <p class="lead-text">Please provide valid patient particulars. The 10-digit mobile number will be used for token verification and lookup.</p>
+
+        <form id="residentDetailsForm">
+          <div class="form-row">
+            <div class="form-group">
+              <label for="inputResidentName">Resident Full Name <span class="req">*</span></label>
+              <input type="text" id="inputResidentName" required placeholder="e.g. M. Selvam">
+              <span class="form-hint">Enter the full name of the resident attending the consultation.</span>
+            </div>
+            <div class="form-group">
+              <label for="inputResidentPhone">10-Digit Mobile Phone Number <span class="req">*</span></label>
+              <input type="tel" id="inputResidentPhone" required pattern="[0-9]{10}" placeholder="e.g. 9876543210">
+              <span class="form-hint">Official confirmation and token lookup reference will be tied to this number.</span>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label for="inputResidentAge">Age (Years)</label>
+              <input type="number" id="inputResidentAge" min="1" max="120" placeholder="e.g. 45">
+            </div>
+            <div class="form-group">
+              <label for="inputResidentGender">Gender</label>
+              <select id="inputResidentGender">
+                <option value="Not Specified">Select Gender</option>
+                <option value="Male">Male</option>
+                <option value="Female">Female</option>
+                <option value="Transgender">Transgender</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="inputResidentArea">Locality / Taluk</label>
+              <input type="text" id="inputResidentArea" placeholder="e.g. Pollachi Town">
+            </div>
+          </div>
+
+          <div class="form-group full">
+            <label for="inputMedicalNotes">Previous Medical Notes / Symptoms (Optional)</label>
+            <textarea id="inputMedicalNotes" rows="2" placeholder="e.g. Requires reading glasses examination; diabetic history for 3 years."></textarea>
+          </div>
+        </form>
+
+        <div class="step-actions">
+          <button type="button" class="btn btn-secondary" id="btnStep2Back">← Back to Step 1: Select Service</button>
+          <button type="button" class="btn btn-primary btn-lg" id="btnStep2Next">Proceed to Step 3: Review &amp; Declaration →</button>
+        </div>
+      </div>
+    </section>
+
+    <section id="step3Panel" class="wizard-panel" aria-labelledby="step3Heading">
+      <div class="card">
+        <div class="card-header-bar">
+          <h2 id="step3Heading">Step 3: Pre-Submission Review &amp; Self-Declaration</h2>
+          <span class="badge badge-warning">Verification Scrutiny</span>
+        </div>
+        <p class="lead-text">Please verify all reservation details before finalizing. Token slots are strictly monitored for capacity compliance.</p>
+
+        <div class="review-summary-card">
+          <h3 style="margin-bottom: 0.85rem; color: var(--gov-green);">Camp &amp; Service Particulars</h3>
+          <div class="review-row">
+            <span class="review-label">Medical Camp</span>
+            <span class="review-value" id="revCampName">-</span>
+          </div>
+          <div class="review-row">
+            <span class="review-label">Consultation Counter</span>
+            <span class="review-value" id="revServiceName">-</span>
+          </div>
+          <div class="review-row">
+            <span class="review-label">Camp Date &amp; Time</span>
+            <span class="review-value" id="revCampDate">-</span>
+          </div>
+          <div class="review-row">
+            <span class="review-label">Reporting Window</span>
+            <span class="review-value" id="revReportingWindow">-</span>
+          </div>
+          <div class="review-row">
+            <span class="review-label">Venue Address</span>
+            <span class="review-value" id="revVenue">-</span>
+          </div>
+          <div class="review-row">
+            <span class="review-label">Consultation Fee</span>
+            <span class="review-value" id="revFee">Free / ₹0.00</span>
+          </div>
+          <div class="review-row">
+            <span class="review-label">Required Items to Bring</span>
+            <span class="review-value" id="revItemsToBring">-</span>
+          </div>
+        </div>
+
+        <div class="review-summary-card">
+          <h3 style="margin-bottom: 0.85rem; color: var(--gov-green);">Resident Particulars</h3>
+          <div class="review-row">
+            <span class="review-label">Resident Name</span>
+            <span class="review-value" id="revResidentName">-</span>
+          </div>
+          <div class="review-row">
+            <span class="review-label">Mobile Number</span>
+            <span class="review-value" id="revResidentPhone">-</span>
+          </div>
+          <div class="review-row">
+            <span class="review-label">Demographics</span>
+            <span class="review-value" id="revResidentDemo">-</span>
+          </div>
+          <div class="review-row">
+            <span class="review-label">Locality</span>
+            <span class="review-value" id="revResidentArea">-</span>
+          </div>
+        </div>
+
+        <div class="declaration-box">
+          <input type="checkbox" id="chkDeclaration" required>
+          <label for="chkDeclaration" class="declaration-label">
+            I hereby declare that the particulars provided above are genuine. I undertake to report to the medical counter within the allocated reporting window and carry the mandatory identification cards and previous prescriptions.
+          </label>
+        </div>
+
+        <div class="step-actions">
+          <button type="button" class="btn btn-secondary" id="btnStep3Back">← Back to Step 2: Edit Details</button>
+          <button type="button" class="btn btn-primary btn-lg" id="btnStep3Confirm">Confirm &amp; Generate Official Token Slip →</button>
+        </div>
+      </div>
+    </section>
+
+    <section id="step4Panel" class="wizard-panel" aria-labelledby="step4Heading">
+      <div id="officialReceiptSlip" class="official-receipt">
+        <div class="receipt-header">
+          <div class="receipt-org-title">TAMIL NADU COMMUNITY HEALTH INITIATIVE | தமிழ்நாடு சமூக நல்வாழ்வு திட்டம்</div>
+          <div class="receipt-portal-title">NALAMCAMP | நலமுகாம்</div>
+          <span class="receipt-doc-name">Official Medical Token &amp; Appointment Slip</span>
+        </div>
+
+        <div class="token-highlight-box">
+          <div class="token-highlight-label">Reporting Consultation Token</div>
+          <div class="token-highlight-number" id="slipTokenNumber">TK-000-000</div>
+          <div class="token-highlight-sub" id="slipTokenStatus">CONFIRMED &bull; AUTHORIZED</div>
+        </div>
+
+        <div class="barcode-strip" aria-hidden="true"></div>
+
+        <table class="detail-table" aria-label="Official Token Particulars">
+          <tbody>
+            <tr>
+              <th scope="row">Booking Reference</th>
+              <td id="slipReference" style="font-weight: 700; font-family: monospace;">-</td>
+            </tr>
+            <tr>
+              <th scope="row">Resident / Patient</th>
+              <td id="slipResidentName">-</td>
+            </tr>
+            <tr>
+              <th scope="row">Mobile Contact</th>
+              <td id="slipResidentPhone">-</td>
+            </tr>
+            <tr>
+              <th scope="row">Medical Camp</th>
+              <td id="slipCampName">-</td>
+            </tr>
+            <tr>
+              <th scope="row">Service Counter</th>
+              <td id="slipServiceName">-</td>
+            </tr>
+            <tr>
+              <th scope="row">Camp Date</th>
+              <td id="slipCampDate">-</td>
+            </tr>
+            <tr>
+              <th scope="row">Designated Reporting Window</th>
+              <td id="slipReportingWindow" style="font-weight: 700; color: var(--gov-green);">-</td>
+            </tr>
+            <tr>
+              <th scope="row">Camp Venue Address</th>
+              <td id="slipVenue">-</td>
+            </tr>
+            <tr>
+              <th scope="row">Consultation Fee</th>
+              <td id="slipFee">Free / ₹0.00</td>
+            </tr>
+            <tr>
+              <th scope="row">Mandatory Items to Bring</th>
+              <td id="slipInstructions">-</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <div class="receipt-footer">
+          Please present this digital or printed slip to the volunteer at the reception desk for check-in. For assistance or cancellation, use the reference number above on the My Token portal.
+        </div>
+      </div>
+
+      <div class="btn-group" style="justify-content: center; margin-top: 1.5rem;">
+        <button type="button" class="btn btn-primary btn-lg" id="btnPrintSlip">🖨️ Print Token Slip / அச்சிடுக</button>
+        <a href="token.html" class="btn btn-secondary btn-lg" id="btnViewMyToken">View in My Token Portal</a>
+        <button type="button" class="btn btn-secondary" id="btnBookAnother">Book Another Token</button>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+      <div class="footer-grid">
+        <div class="footer-col">
+          <h4>NalamCamp | நலமுகாம்</h4>
+          <p>Public community medical camp monitoring, authorized poster verification, and token management portal for Tamil Nadu.</p>
+        </div>
+        <div class="footer-col">
+          <h4>Citizen Services</h4>
+          <ul>
+            <li><a href="index.html">Find a Camp</a></li>
+            <li><a href="booking.html">Book Online Token</a></li>
+            <li><a href="token.html">Check Token Status &amp; Slip</a></li>
+            <li><a href="poster-check.html">Verify Medical Poster</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h4>Department Portals</h4>
+          <ul>
+            <li><a href="staff.html">Camp Organizer Desk</a></li>
+            <li><a href="staff.html">Health Officer Scrutiny</a></li>
+            <li><a href="staff.html">Camp Reception Check-in</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h4>Emergency &amp; Help</h4>
+          <ul>
+            <li>Medical Helpline: <strong>104</strong></li>
+            <li>Ambulance Service: <strong>108</strong></li>
+            <li>Disability Helpline: <strong>155355</strong></li>
+          </ul>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        &copy; 2026 NalamCamp | நலமுகாம். Designed for community public health oversight in Tamil Nadu.
+      </div>
+    </div>
+  </footer>
+
+  <script src="js/api.js"></script>
+  <script src="js/booking.js"></script>
+</body>
+</html>

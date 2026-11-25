@@ -1,5 +1,6 @@
 package in.nalamcamp.Nalamcamp.dto;
 
+import com.fasterxml.jackson.annotation.JsonAlias;
 import in.nalamcamp.Nalamcamp.CampSession.BookingMode;
 import jakarta.validation.constraints.*;
 import java.math.BigDecimal;
@@ -22,6 +23,7 @@ public record CampSessionRequest(
         BigDecimal fee,
 
         @Size(max = 1000, message = "Items to bring must be 1000 characters or fewer")
+        @JsonAlias({"requiredItems", "itemsToBring"})
         String itemsToBring,
 
         @NotNull(message = "Booking mode is required")
@@ -29,6 +31,7 @@ public record CampSessionRequest(
 
         @NotNull(message = "Online capacity is required")
         @PositiveOrZero(message = "Online capacity cannot be negative")
+        @JsonAlias({"capacity", "totalCapacity", "onlineCapacity"})
         Integer onlineCapacity
 
 ) {

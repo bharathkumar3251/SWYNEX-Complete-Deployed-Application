@@ -40,6 +40,11 @@ public class CampController {
         return campService.getPublicCamps(area, date, service);
     }
 
+    @GetMapping("/my")
+    public List<CampResponse> getMyCamps(HttpServletRequest httpRequest) {
+        return campService.getMyCamps(httpRequest);
+    }
+
     @GetMapping("/{id}")
     public CampResponse getCampById(@PathVariable("id") Long id,
                                     HttpServletRequest httpRequest) {

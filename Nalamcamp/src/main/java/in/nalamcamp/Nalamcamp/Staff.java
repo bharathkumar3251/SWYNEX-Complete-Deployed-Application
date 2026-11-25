@@ -26,7 +26,7 @@ public class Staff {
     @Column(nullable = false, length = 20)
     private Role role;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "organizer_id")
     private Organizer organizer;
 

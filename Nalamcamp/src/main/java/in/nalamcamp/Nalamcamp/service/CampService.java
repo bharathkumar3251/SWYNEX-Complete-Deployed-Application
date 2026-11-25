@@ -74,6 +74,19 @@ public class CampService {
                 .toList();
     }
 
+    @Transactional(readOnly = true)
+    public List<CampResponse> getMyCamps(HttpServletRequest httpRequest) {
+        Staff staff = staffAccessService.requireRole(httpRequest, Staff.Role.ORGANIZER);
+        Organizer organizer = staff.getOrganizer();
+        if (organizer == null) {
+            return List.of();
+        }
+        List<Camp> camps = campRepository.findByOrganizer_IdOrderByIdDesc(organizer.getId());
+        return camps.stream()
+                .map(this::toResponse)
+                .toList();
+    }
+
     public Camp getCampById(Long id) {
         return campRepository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(

@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NalamCamp | நலமுகாம் — Staff &amp; Officers Department Gateway</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <div class="gov-top-bar">
+    <div class="gov-top-inner">
+      <div class="gov-initiative">GOVERNMENT OF TAMIL NADU INITIATIVE | தமிழ்நாடு அரசு முன்னெடுப்பு</div>
+      <div class="gov-utility-links">
+        <span class="gov-clock" id="govClock"></span>
+        <button type="button" class="gov-utility-btn" id="btnTextNormal" title="Normal text">A</button>
+        <button type="button" class="gov-utility-btn" id="btnTextLarge" title="Large text">A+</button>
+        <button type="button" class="gov-utility-btn" id="btnTextXLarge" title="Extra large text">A++</button>
+        <button type="button" class="gov-utility-btn" id="btnContrast" title="Toggle high contrast">Contrast</button>
+      </div>
+    </div>
+  </div>
+
+  <header class="gov-masthead">
+    <div class="gov-masthead-inner">
+      <a href="index.html" class="gov-brand">
+        <div class="gov-emblem">ந</div>
+        <div class="gov-brand-titles">
+          <span class="gov-title-en">NALAMCAMP PORTAL</span>
+          <span class="gov-title-ta">நலமுகாம் பொது மருத்துவ சேவை தளம்</span>
+          <span class="gov-sub-title">Public Medical Camp Verification &amp; Citizen Token System</span>
+        </div>
+      </a>
+      <div class="gov-helpline-box">
+        <div class="helpline-item">
+          <span class="helpline-label">Medical Helpline</span>
+          <span class="helpline-number">104</span>
+        </div>
+        <div class="helpline-item">
+          <span class="helpline-label">Emergency Ambulance</span>
+          <span class="helpline-number">108</span>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <nav class="gov-nav-bar" aria-label="Main Navigation">
+    <div class="gov-nav-inner">
+      <a href="index.html">Home / முகப்பு</a>
+      <a href="booking.html">Book Token (Step-by-Step) / முன்பதிவு</a>
+      <a href="token.html">My Token / ரசீது</a>
+      <a href="poster-check.html">Verify Poster / சுவரொட்டி சரிபார்ப்பு</a>
+      <a href="staff.html" class="active">Staff Login / துறை உள்நுழைவு</a>
+    </div>
+  </nav>
+
+  <div class="gov-ticker">
+    <div class="gov-ticker-inner">
+      <span class="ticker-tag">Department Portal</span>
+      <span>Authorized health personnel only. All access, approvals, and token check-ins are logged with district timestamps.</span>
+    </div>
+  </div>
+
+  <div class="breadcrumbs">
+    <a href="index.html">Home</a> &gt; <span>Department Gateway</span> &gt; <span class="current">Staff Login &amp; Management</span>
+  </div>
+
+  <main>
+    <div id="staffHeaderBar" style="display: none; background: #ffffff; border: 1px solid var(--gov-border); border-left: 4px solid var(--gov-green); border-radius: 4px; padding: 0.85rem 1.25rem; margin-bottom: 1.5rem; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.75rem;">
+      <div>
+        <span style="font-size: 0.85rem; color: var(--gov-text-muted); text-transform: uppercase; font-weight: 700;">Authorized Session:</span>
+        <strong id="currentStaffEmail" style="margin-left: 0.35rem;"></strong> &bull;
+        <span id="currentStaffRole" class="badge badge-approved" style="margin: 0 0.35rem;"></span>
+        <span id="currentStaffOrg" style="font-size: 0.88rem; color: #475569;"></span>
+      </div>
+      <div>
+        <button type="button" class="btn btn-secondary btn-sm" id="logoutBtn">Secure Sign Out</button>
+      </div>
+    </div>
+
+    <section id="loginSection" class="card" style="max-width: 520px; margin: 1.5rem auto 3rem;" aria-labelledby="loginHeading">
+      <div class="card-header-bar">
+        <h1 id="loginHeading" style="font-size: 1.35rem;">Department Officer Login</h1>
+        <span class="badge badge-draft">Secure Gateway</span>
+      </div>
+      <p class="lead-text">Sign in to your designated operational desk (Camp Organizer, Public Health Reviewer, or Volunteer Reception).</p>
+
+      <div id="loginFeedback" role="status" aria-live="polite"></div>
+
+      <form id="loginForm">
+        <div class="form-group">
+          <label for="loginEmail">Officer / Staff Email Address <span class="req">*</span></label>
+          <input type="email" id="loginEmail" name="email" required placeholder="e.g. organizer@nalamcamp.test">
+        </div>
+
+        <div class="form-group">
+          <label for="loginPassword">Authorized Password <span class="req">*</span></label>
+          <input type="password" id="loginPassword" name="password" required placeholder="Enter password">
+        </div>
+
+        <button type="submit" class="btn btn-primary btn-lg" id="loginSubmitBtn" style="width: 100%; margin-top: 0.5rem;">Sign In to Department Gateway →</button>
+      </form>
+
+      <div style="margin-top: 1.75rem; padding-top: 1.25rem; border-top: 1px solid var(--gov-border); font-size: 0.85rem; color: var(--gov-text-muted);">
+        <strong style="color: var(--gov-text); display: block; margin-bottom: 0.5rem;">Evaluation Role Accounts:</strong>
+        <div style="display: flex; flex-direction: column; gap: 0.4rem;">
+          <button type="button" class="btn btn-secondary btn-sm quick-login" data-email="organizer@nalamcamp.test" data-pass="Organizer@123" style="justify-content: flex-start;">
+            🏢 Organizer Desk: organizer@nalamcamp.test
+          </button>
+          <button type="button" class="btn btn-secondary btn-sm quick-login" data-email="reviewer@nalamcamp.test" data-pass="Reviewer@123" style="justify-content: flex-start;">
+            ⚖️ Health Officer Scrutiny: reviewer@nalamcamp.test
+          </button>
+          <button type="button" class="btn btn-secondary btn-sm quick-login" data-email="volunteer@nalamcamp.test" data-pass="Volunteer@123" style="justify-content: flex-start;">
+            📋 Camp Reception Volunteer: volunteer@nalamcamp.test
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <div id="portalContainer" style="display: none;">
+
+      <section id="organizerDashboard" style="display: none;" aria-labelledby="orgHeading">
+        <div class="card-header-bar">
+          <div>
+            <h1 id="orgHeading">Camp Organizer Desk</h1>
+            <p class="lead-text" style="margin-bottom: 0;">Author new community camp proposals, configure specialty counters, and submit for district health inspection.</p>
+          </div>
+          <button type="button" class="btn btn-primary" id="showCreateCampBtn">+ Create Camp Draft</button>
+        </div>
+
+        <div id="organizerFeedback" role="status" aria-live="polite"></div>
+
+        <div id="createCampFormCard" class="card" style="display: none; border: 2px solid var(--gov-green); background: #f0fdf4;">
+          <h2 id="campFormTitle" style="font-size: 1.2rem; margin-bottom: 1rem;">Camp Proposal Wizard: Basic Particulars</h2>
+          <form id="campForm">
+            <input type="hidden" id="editCampId">
+            <div class="form-row">
+              <div class="form-group">
+                <label for="newCampName">Medical Camp Title <span class="req">*</span></label>
+                <input type="text" id="newCampName" required placeholder="e.g. Free Eye Screening &amp; Diabetes Camp">
+              </div>
+              <div class="form-group">
+                <label for="newCampDate">Scheduled Date <span class="req">*</span></label>
+                <input type="date" id="newCampDate" required>
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label for="newCampArea">Taluk / Area / Locality <span class="req">*</span></label>
+                <input type="text" id="newCampArea" required placeholder="e.g. Salem, Gandhipuram">
+              </div>
+              <div class="form-group">
+                <label for="newCampVenue">Venue Address <span class="req">*</span></label>
+                <input type="text" id="newCampVenue" required placeholder="e.g. Government Higher Secondary School Campus">
+              </div>
+            </div>
+            <div class="step-actions">
+              <button type="button" class="btn btn-secondary" id="cancelCampFormBtn">Cancel</button>
+              <button type="submit" class="btn btn-primary btn-lg" id="saveCampBtn">Save Camp Draft →</button>
+            </div>
+          </form>
+        </div>
+
+        <div id="manageCountersCard" class="card" style="display: none; border: 2px solid var(--gov-green);">
+          <div class="card-header-bar">
+            <h2 id="counterManagerTitle" style="font-size: 1.2rem;">Configure Service Counters</h2>
+            <button type="button" class="btn btn-secondary btn-sm" id="closeCounterManagerBtn">Done Configuring</button>
+          </div>
+          <p class="form-hint" style="margin-bottom: 1.25rem;">Each camp must have at least one configured specialty counter before it can be submitted for district health review.</p>
+
+          <div id="existingCountersList" style="margin-bottom: 1.5rem;"></div>
+
+          <div class="card" style="background: #f8fafc; border: 1px dashed var(--gov-border);">
+            <h3 style="font-size: 1.05rem; margin-bottom: 0.75rem; color: var(--gov-green);">+ Add New Service Counter</h3>
+            <form id="addCounterForm">
+              <input type="hidden" id="counterCampId">
+              <div class="form-row">
+                <div class="form-group">
+                  <label for="counterName">Specialty Service Name <span class="req">*</span></label>
+                  <input type="text" id="counterName" required placeholder="e.g. Eye Screening, Blood Sugar Check">
+                </div>
+                <div class="form-group">
+                  <label for="counterCapacity">Online Token Capacity <span class="req">*</span></label>
+                  <input type="number" id="counterCapacity" min="0" max="500" required value="20">
+                </div>
+              </div>
+
+              <div class="form-row">
+                <div class="form-group">
+                  <label for="counterStartTime">Start Time <span class="req">*</span></label>
+                  <input type="time" id="counterStartTime" required value="09:00">
+                </div>
+                <div class="form-group">
+                  <label for="counterEndTime">End Time <span class="req">*</span></label>
+                  <input type="time" id="counterEndTime" required value="13:00">
+                </div>
+                <div class="form-group">
+                  <label for="counterBookingMode">Booking Mode <span class="req">*</span></label>
+                  <select id="counterBookingMode" required>
+                    <option value="BOTH">Both (Online Tokens &amp; Walk-ins)</option>
+                    <option value="ONLINE">Online Tokens Only</option>
+                    <option value="WALK_IN">Walk-in Only</option>
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label for="counterFee">Consultation Fee (₹)</label>
+                  <input type="number" id="counterFee" min="0" step="0.5" value="0">
+                </div>
+              </div>
+
+              <div class="form-group full">
+                <label for="counterItems">Mandatory Items for Resident to Bring</label>
+                <input type="text" id="counterItems" placeholder="e.g. Aadhaar Card, previous spectacles prescription">
+              </div>
+
+              <button type="submit" class="btn btn-primary" id="saveCounterBtn">+ Save Counter to Camp Draft</button>
+            </form>
+          </div>
+          <div id="counterFeedback" style="margin-top: 1rem;"></div>
+        </div>
+
+        <div class="card-header-bar" style="margin-top: 2rem;">
+          <h2>My Organized Medical Camps</h2>
+          <span id="myCampsCount" class="badge badge-info"></span>
+        </div>
+        <div id="myCampsList"></div>
+      </section>
+
+      <section id="reviewerDashboard" style="display: none;" aria-labelledby="revHeading">
+        <div class="card-header-bar">
+          <div>
+            <h1 id="revHeading">Public Health Officer Scrutiny Desk</h1>
+            <p class="lead-text" style="margin-bottom: 0;">Review submitted medical camps and poster checks against official government circulars and district health registry.</p>
+          </div>
+          <button type="button" class="btn btn-secondary btn-sm" id="refreshReviewBtn">Refresh Queue</button>
+        </div>
+
+        <div id="reviewerFeedback" role="status" aria-live="polite"></div>
+
+        <section aria-labelledby="submittedCampsHeading" style="margin-bottom: 2.5rem;">
+          <h2 id="submittedCampsHeading" style="font-size: 1.25rem; margin-bottom: 1rem;">Pending Camp Approval Submissions</h2>
+          <div id="pendingCampsList"></div>
+        </section>
+
+        <section aria-labelledby="submittedPostersHeading">
+          <h2 id="submittedPostersHeading" style="font-size: 1.25rem; margin-bottom: 1rem;">Pending Poster Checks Awaiting Officer Decision</h2>
+          <div id="pendingPostersList"></div>
+        </section>
+      </section>
+
+      <section id="volunteerDashboard" style="display: none;" aria-labelledby="volHeading">
+        <div class="card-header-bar">
+          <div>
+            <h1 id="volHeading">Camp Reception &amp; Token Check-in Desk</h1>
+            <p class="lead-text" style="margin-bottom: 0;">Verify arriving online token holders, prevent duplicate admissions, register venue walk-in visitors, and monitor attendance.</p>
+          </div>
+        </div>
+
+        <div id="volunteerFeedback" role="status" aria-live="polite"></div>
+
+        <div class="form-row">
+          <div class="card" style="flex: 1;">
+            <h2 style="font-size: 1.2rem; margin-bottom: 0.75rem; color: var(--gov-green);">1. Token Holder Check-in</h2>
+            <p class="form-hint" style="margin-bottom: 1rem;">Enter the token number or booking reference shown on the resident's slip.</p>
+            <form id="checkInForm">
+              <div class="form-group">
+                <label for="checkInTokenInput">Token No / Reference Code <span class="req">*</span></label>
+                <input type="text" id="checkInTokenInput" required placeholder="e.g. TK-133-001 or BKG-2D499EB3" style="font-family: monospace; font-size: 1.05rem; letter-spacing: 0.05em; text-transform: uppercase;">
+              </div>
+              <button type="submit" class="btn btn-primary" id="checkInBtn">Verify &amp; Admit Resident</button>
+            </form>
+            <div id="checkInFeedback" style="margin-top: 1rem;"></div>
+          </div>
+
+          <div class="card" style="flex: 1;">
+            <h2 style="font-size: 1.2rem; margin-bottom: 0.75rem; color: var(--gov-green);">2. Register Walk-in Visitor</h2>
+            <p class="form-hint" style="margin-bottom: 1rem;">Register eligible walk-in residents directly at the counter. Walk-ins do not consume online reserved tokens.</p>
+            <form id="walkInForm">
+              <div class="form-group">
+                <label for="walkInCampSelect">Select Medical Camp <span class="req">*</span></label>
+                <select id="walkInCampSelect" required>
+                  <option value="">-- Choose Camp --</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label for="walkInSessionSelect">Select Service Counter <span class="req">*</span></label>
+                <select id="walkInSessionSelect" required>
+                  <option value="">-- Choose Counter --</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label for="walkInVisitorName">Visitor Full Name <span class="req">*</span></label>
+                <input type="text" id="walkInVisitorName" required placeholder="e.g. S. Ramasamy">
+              </div>
+              <div class="form-group">
+                <label for="walkInVisitorPhone">Phone Number (Optional)</label>
+                <input type="tel" id="walkInVisitorPhone" placeholder="e.g. 9840123499">
+              </div>
+              <button type="submit" class="btn btn-primary" id="walkInBtn">Issue Walk-in Pass</button>
+            </form>
+            <div id="walkInFeedback" style="margin-top: 1rem;"></div>
+          </div>
+        </div>
+
+        <section class="card" style="margin-top: 1.5rem;" aria-labelledby="attendanceHeading">
+          <div class="card-header-bar">
+            <h2 id="attendanceHeading" style="font-size: 1.2rem;">Live Camp Attendance Register</h2>
+            <div class="btn-group">
+              <select id="attendanceCampSelect">
+                <option value="">-- Choose Camp for Attendance --</option>
+              </select>
+              <button type="button" class="btn btn-secondary btn-sm" id="refreshAttendanceBtn">Refresh Metrics</button>
+            </div>
+          </div>
+          <div id="attendanceStatsGrid" class="stats-grid" style="display: none;">
+            <div class="stat-box">
+              <div class="stat-num" id="totalCheckedInCount">0</div>
+              <div class="stat-label">Total Admitted (Camp Total)</div>
+            </div>
+            <div class="stat-box">
+              <div class="stat-num" id="onlineCheckedInCount">0</div>
+              <div class="stat-label">Online Token Checked-In</div>
+            </div>
+            <div class="stat-box">
+              <div class="stat-num" id="walkInCheckedInCount">0</div>
+              <div class="stat-label">Venue Walk-in Registrations</div>
+            </div>
+          </div>
+          <div id="attendanceFeedback"></div>
+        </section>
+      </section>
+
+    </div>
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+      <div class="footer-grid">
+        <div class="footer-col">
+          <h4>NalamCamp | நலமுகாம்</h4>
+          <p>Public community medical camp monitoring, authorized poster verification, and token management portal for Tamil Nadu.</p>
+        </div>
+        <div class="footer-col">
+          <h4>Citizen Services</h4>
+          <ul>
+            <li><a href="index.html">Find a Camp</a></li>
+            <li><a href="booking.html">Book Online Token</a></li>
+            <li><a href="token.html">Check Token Status &amp; Slip</a></li>
+            <li><a href="poster-check.html">Verify Medical Poster</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h4>Department Portals</h4>
+          <ul>
+            <li><a href="staff.html">Camp Organizer Desk</a></li>
+            <li><a href="staff.html">Health Officer Scrutiny</a></li>
+            <li><a href="staff.html">Camp Reception Check-in</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h4>Emergency &amp; Help</h4>
+          <ul>
+            <li>Medical Helpline: <strong>104</strong></li>
+            <li>Ambulance Service: <strong>108</strong></li>
+            <li>Disability Helpline: <strong>155355</strong></li>
+          </ul>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        &copy; 2026 NalamCamp | நலமுகாம். Designed for community public health oversight in Tamil Nadu.
+      </div>
+    </div>
+  </footer>
+
+  <script src="js/api.js"></script>
+  <script src="js/staff.js"></script>
+</body>
+</html>

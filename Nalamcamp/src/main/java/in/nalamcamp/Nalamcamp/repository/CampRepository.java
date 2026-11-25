@@ -22,6 +22,8 @@ public interface CampRepository extends JpaRepository<Camp, Long> {
 
     List<Camp> findByStatus(String status);
 
+    List<Camp> findByOrganizer_IdOrderByIdDesc(Long organizerId);
+
     List<Camp> findByStatusIn(Collection<String> statuses);
 
     @Query("""

@@ -113,6 +113,20 @@ public class CampSessionService {
         return sessionRepository.save(session);
     }
 
+    @Transactional
+    public void deleteSession(Long sessionId, HttpServletRequest httpRequest) {
+        Staff staff = staffAccessService.requireRole(httpRequest, Staff.Role.ORGANIZER);
+        CampSession session = sessionRepository.findById(sessionId)
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.NOT_FOUND, "Counter not found: " + sessionId));
+
+        staffAccessService.checkCampOwnership(staff, session.getCamp());
+        if (!session.getCamp().isDraft()) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "Can only delete counters on draft camps");
+        }
+        sessionRepository.delete(session);
+    }
+
     private void copyDetails(CampSession session, CampSessionRequest request) {
         session.setServiceName(request.serviceName().strip());
         session.setStartTime(request.startTime());

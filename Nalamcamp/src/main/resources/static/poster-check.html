@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NalamCamp | நலமுகாம் — Medical Poster Verification Desk</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <div class="gov-top-bar">
+    <div class="gov-top-inner">
+      <div class="gov-initiative">GOVERNMENT OF TAMIL NADU INITIATIVE | தமிழ்நாடு அரசு முன்னெடுப்பு</div>
+      <div class="gov-utility-links">
+        <span class="gov-clock" id="govClock"></span>
+        <button type="button" class="gov-utility-btn" id="btnTextNormal" title="Normal text">A</button>
+        <button type="button" class="gov-utility-btn" id="btnTextLarge" title="Large text">A+</button>
+        <button type="button" class="gov-utility-btn" id="btnTextXLarge" title="Extra large text">A++</button>
+        <button type="button" class="gov-utility-btn" id="btnContrast" title="Toggle high contrast">Contrast</button>
+      </div>
+    </div>
+  </div>
+
+  <header class="gov-masthead">
+    <div class="gov-masthead-inner">
+      <a href="index.html" class="gov-brand">
+        <div class="gov-emblem">ந</div>
+        <div class="gov-brand-titles">
+          <span class="gov-title-en">NALAMCAMP PORTAL</span>
+          <span class="gov-title-ta">நலமுகாம் பொது மருத்துவ சேவை தளம்</span>
+          <span class="gov-sub-title">Public Medical Camp Verification &amp; Citizen Token System</span>
+        </div>
+      </a>
+      <div class="gov-helpline-box">
+        <div class="helpline-item">
+          <span class="helpline-label">Medical Helpline</span>
+          <span class="helpline-number">104</span>
+        </div>
+        <div class="helpline-item">
+          <span class="helpline-label">Emergency Ambulance</span>
+          <span class="helpline-number">108</span>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <nav class="gov-nav-bar" aria-label="Main Navigation">
+    <div class="gov-nav-inner">
+      <a href="index.html">Home / முகப்பு</a>
+      <a href="booking.html">Book Token (Step-by-Step) / முன்பதிவு</a>
+      <a href="token.html">My Token / ரசீது</a>
+      <a href="poster-check.html" class="active">Verify Poster / சுவரொட்டி சரிபார்ப்பு</a>
+      <a href="staff.html">Staff Login / துறை உள்நுழைவு</a>
+    </div>
+  </nav>
+
+  <div class="gov-ticker">
+    <div class="gov-ticker-inner">
+      <span class="ticker-tag">Scrutiny Notice</span>
+      <span>Poster verification cross-references announced medical camps with official district circulars. An unmatched poster is not necessarily fraudulent.</span>
+    </div>
+  </div>
+
+  <div class="breadcrumbs">
+    <a href="index.html">Home</a> &gt; <span>Citizen Services</span> &gt; <span class="current">Poster Verification Desk</span>
+  </div>
+
+  <main>
+    <h1>Medical Poster Verification Desk</h1>
+    <p class="lead-text">Upload a medical camp flyer, pamphlet, or WhatsApp poster to cross-reference announced details against approved public health circulars.</p>
+
+    <div class="stepper-wrapper" aria-label="Scrutiny Progress">
+      <div class="step-item active" id="pStep1">
+        <div class="step-circle" id="pCircle1">1</div>
+        <div class="step-details">
+          <span class="step-number">Step 1</span>
+          <span class="step-title">Upload / Input</span>
+        </div>
+      </div>
+      <div class="step-line" id="pLine1"></div>
+      <div class="step-item" id="pStep2">
+        <div class="step-circle" id="pCircle2">2</div>
+        <div class="step-details">
+          <span class="step-number">Step 2</span>
+          <span class="step-title">Field Scrutiny</span>
+        </div>
+      </div>
+      <div class="step-line" id="pLine2"></div>
+      <div class="step-item" id="pStep3">
+        <div class="step-circle" id="pCircle3">3</div>
+        <div class="step-details">
+          <span class="step-number">Step 3</span>
+          <span class="step-title">Official Outcome</span>
+        </div>
+      </div>
+    </div>
+
+    <section id="panelStep1" class="wizard-panel active" aria-labelledby="step1UploadHeading">
+      <div class="card">
+        <div class="card-header-bar">
+          <h2 id="step1UploadHeading">Step 1: Upload Medical Camp Poster Image</h2>
+          <span class="badge badge-info">Image Scrutiny</span>
+        </div>
+        <p class="lead-text">Upload a clear photo or screenshot (JPEG or PNG format, up to 10MB). The system uses Optical Character Recognition to parse organizer, venue, and date.</p>
+
+        <form id="posterUploadForm">
+          <div class="form-group">
+            <label for="posterFileInput">Select Poster Image File <span class="req">*</span></label>
+            <input type="file" id="posterFileInput" name="file" accept="image/jpeg,image/png,image/jpg" required>
+            <span class="form-hint">Supported formats: JPEG, PNG. Maximum file size: 10 Megabytes.</span>
+          </div>
+
+          <div class="step-actions">
+            <button type="button" class="btn btn-secondary" id="skipToManualBtn">Proceed with Manual Entry (Without Image) →</button>
+            <button type="submit" class="btn btn-primary btn-lg" id="uploadBtn">Extract Poster Details (OCR) →</button>
+          </div>
+        </form>
+
+        <div id="uploadFeedback" role="status" aria-live="polite" style="margin-top: 1.25rem;"></div>
+      </div>
+    </section>
+
+    <section id="panelStep2" class="wizard-panel" aria-labelledby="step2ScrutinyHeading">
+      <div class="card">
+        <div class="card-header-bar">
+          <h2 id="step2ScrutinyHeading">Step 2: Scrutinize &amp; Correct Extracted Fields</h2>
+          <span class="badge badge-warning">Field Scrutiny</span>
+        </div>
+        <p class="lead-text">Review the text parsed by the OCR engine. Correct any spelling or date inaccuracies before cross-referencing against authorized records.</p>
+
+        <div class="scrutiny-box">
+          <div style="font-weight: 700; color: var(--gov-green); margin-bottom: 0.35rem; font-family: sans-serif;">RAW OCR PARSED OUTPUT:</div>
+          <div id="rawOcrText">No text extracted.</div>
+        </div>
+
+        <form id="matchForm">
+          <input type="hidden" id="posterCheckIdHidden">
+
+          <div class="form-row">
+            <div class="form-group">
+              <label for="correctedCampName">Camp Title / Subject</label>
+              <input type="text" id="correctedCampName" placeholder="e.g. Free Eye Screening Camp">
+              <span class="form-hint">The main title announced on the banner or poster.</span>
+            </div>
+            <div class="form-group">
+              <label for="correctedOrganizer">Organizer / Trust / Society Name</label>
+              <input type="text" id="correctedOrganizer" placeholder="e.g. Nalam Volunteers">
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label for="correctedDate">Announced Camp Date</label>
+              <input type="date" id="correctedDate">
+            </div>
+            <div class="form-group">
+              <label for="correctedVenue">Announced Venue / Locality</label>
+              <input type="text" id="correctedVenue" placeholder="e.g. Town Community Hall, Pollachi">
+            </div>
+          </div>
+
+          <div class="step-actions">
+            <button type="button" class="btn btn-secondary" id="btnBackToStep1">← Back to Step 1: Upload</button>
+            <button type="submit" class="btn btn-primary btn-lg" id="verifyBtn">Proceed to Step 3: Match Approved Records →</button>
+          </div>
+        </form>
+
+        <div id="matchFeedback" role="status" aria-live="polite" style="margin-top: 1.25rem;"></div>
+      </div>
+    </section>
+
+    <section id="panelStep3" class="wizard-panel" aria-labelledby="step3OutcomeHeading">
+      <div class="card">
+        <div class="card-header-bar">
+          <h2 id="step3OutcomeHeading">Step 3: Official Verification Outcome</h2>
+          <span class="badge badge-info">Scrutiny Report</span>
+        </div>
+
+        <div id="resultBanner"></div>
+
+        <div id="matchedCampDetails" style="display: none; margin-top: 1.5rem;">
+          <h3 style="color: var(--gov-green); margin-bottom: 0.75rem;">Authorized Medical Camp Registry Record</h3>
+          <table class="detail-table" aria-label="Official Registered Camp Particulars">
+            <tbody>
+              <tr>
+                <th scope="row">Registered Camp Title</th>
+                <td id="resCampName" style="font-weight: 700;">-</td>
+              </tr>
+              <tr>
+                <th scope="row">Authorized Organizer</th>
+                <td id="resOrganizer">-</td>
+              </tr>
+              <tr>
+                <th scope="row">Approved Camp Date</th>
+                <td id="resDate">-</td>
+              </tr>
+              <tr>
+                <th scope="row">Authorized Venue</th>
+                <td id="resVenue">-</td>
+              </tr>
+              <tr>
+                <th scope="row">Verification Authority Circular</th>
+                <td id="resVerification" style="color: #1e3a8a; font-weight: 700;">-</td>
+              </tr>
+              <tr>
+                <th scope="row">Direct Registration</th>
+                <td><a href="index.html" id="resViewCampLink" class="btn btn-primary btn-sm">View Camp &amp; Book Token →</a></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div id="manualReviewBox" style="display: none; margin-top: 1.5rem;">
+          <div class="card" style="background: #f8fafc; border: 2px dashed #94a3b8;">
+            <h3 style="color: #334155; margin-bottom: 0.5rem;">Submit for Public Health Officer Scrutiny</h3>
+            <p style="font-size: 0.92rem; color: var(--gov-text-muted); margin-bottom: 1rem;">
+              If this medical camp is taking place in your neighborhood and is unlisted, you can submit the poster directly to the district review queue for independent verification against government circulars.
+            </p>
+            <button type="button" class="btn btn-warning btn-lg" id="submitManualReviewBtn">Submit Poster for Manual Health Officer Review</button>
+            <div id="manualReviewFeedback" style="margin-top: 0.75rem;"></div>
+          </div>
+        </div>
+
+        <div class="step-actions">
+          <button type="button" class="btn btn-secondary" id="btnBackToStep2">← Back to Step 2: Edit Fields</button>
+          <button type="button" class="btn btn-secondary" id="resetOcrBtn">Verify Another Poster</button>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+      <div class="footer-grid">
+        <div class="footer-col">
+          <h4>NalamCamp | நலமுகாம்</h4>
+          <p>Public community medical camp monitoring, authorized poster verification, and token management portal for Tamil Nadu.</p>
+        </div>
+        <div class="footer-col">
+          <h4>Citizen Services</h4>
+          <ul>
+            <li><a href="index.html">Find a Camp</a></li>
+            <li><a href="booking.html">Book Online Token</a></li>
+            <li><a href="token.html">Check Token Status &amp; Slip</a></li>
+            <li><a href="poster-check.html">Verify Medical Poster</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h4>Department Portals</h4>
+          <ul>
+            <li><a href="staff.html">Camp Organizer Desk</a></li>
+            <li><a href="staff.html">Health Officer Scrutiny</a></li>
+            <li><a href="staff.html">Camp Reception Check-in</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h4>Emergency &amp; Help</h4>
+          <ul>
+            <li>Medical Helpline: <strong>104</strong></li>
+            <li>Ambulance Service: <strong>108</strong></li>
+            <li>Disability Helpline: <strong>155355</strong></li>
+          </ul>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        &copy; 2026 NalamCamp | நலமுகாம். Designed for community public health oversight in Tamil Nadu.
+      </div>
+    </div>
+  </footer>
+
+  <script src="js/api.js"></script>
+  <script src="js/poster.js"></script>
+</body>
+</html>

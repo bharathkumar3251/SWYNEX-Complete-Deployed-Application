@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NalamCamp | நலமுகாம் — Medical Camp Details &amp; Counters</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <div class="gov-top-bar">
+    <div class="gov-top-inner">
+      <div class="gov-initiative">GOVERNMENT OF TAMIL NADU INITIATIVE | தமிழ்நாடு அரசு முன்னெடுப்பு</div>
+      <div class="gov-utility-links">
+        <span class="gov-clock" id="govClock"></span>
+        <button type="button" class="gov-utility-btn" id="btnTextNormal" title="Normal text">A</button>
+        <button type="button" class="gov-utility-btn" id="btnTextLarge" title="Large text">A+</button>
+        <button type="button" class="gov-utility-btn" id="btnTextXLarge" title="Extra large text">A++</button>
+        <button type="button" class="gov-utility-btn" id="btnContrast" title="Toggle high contrast">Contrast</button>
+      </div>
+    </div>
+  </div>
+
+  <header class="gov-masthead">
+    <div class="gov-masthead-inner">
+      <a href="index.html" class="gov-brand">
+        <div class="gov-emblem">ந</div>
+        <div class="gov-brand-titles">
+          <span class="gov-title-en">NALAMCAMP PORTAL</span>
+          <span class="gov-title-ta">நலமுகாம் பொது மருத்துவ சேவை தளம்</span>
+          <span class="gov-sub-title">Public Medical Camp Verification &amp; Citizen Token System</span>
+        </div>
+      </a>
+      <div class="gov-helpline-box">
+        <div class="helpline-item">
+          <span class="helpline-label">Medical Helpline</span>
+          <span class="helpline-number">104</span>
+        </div>
+        <div class="helpline-item">
+          <span class="helpline-label">Emergency Ambulance</span>
+          <span class="helpline-number">108</span>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <nav class="gov-nav-bar" aria-label="Main Navigation">
+    <div class="gov-nav-inner">
+      <a href="index.html">Home / முகப்பு</a>
+      <a href="booking.html">Book Token (Step-by-Step) / முன்பதிவு</a>
+      <a href="token.html">My Token / ரசீது</a>
+      <a href="poster-check.html">Verify Poster / சுவரொட்டி சரிபார்ப்பு</a>
+      <a href="staff.html">Staff Login / துறை உள்நுழைவு</a>
+    </div>
+  </nav>
+
+  <div class="gov-ticker">
+    <div class="gov-ticker-inner">
+      <span class="ticker-tag">Notice</span>
+      <span>Counters operate on distinct schedules. Please verify closing times before arrival. Consultation is free.</span>
+    </div>
+  </div>
+
+  <div class="breadcrumbs">
+    <a href="index.html">Home</a> &gt; <a href="index.html">Find a Camp</a> &gt; <span class="current" id="breadcrumbCampName">Camp Details</span>
+  </div>
+
+  <main>
+    <div style="margin-bottom: 1rem;">
+      <a href="index.html" class="btn btn-secondary btn-sm">← Back to All Camps</a>
+    </div>
+
+    <div id="pageFeedback" role="status" aria-live="polite"></div>
+
+    <div id="campContainer" style="display: none;">
+      <article class="card">
+        <div class="card-header-bar">
+          <div>
+            <h1 id="campName" style="margin-bottom: 0.35rem;"></h1>
+            <div id="campOrganizer" style="color: var(--gov-text-muted); font-size: 0.95rem;"></div>
+          </div>
+          <span id="campStatusBadge" class="badge"></span>
+        </div>
+
+        <div id="cancellationAlert" style="display: none;" class="alert alert-error">
+          <strong>Camp Cancelled:</strong> This medical camp has been cancelled by public health authorities. No token reservations can be accepted.
+        </div>
+
+        <table class="detail-table" aria-label="Camp Overview Particulars">
+          <tbody>
+            <tr>
+              <th scope="row">Camp Date</th>
+              <td id="campDate"></td>
+            </tr>
+            <tr>
+              <th scope="row">District / Area</th>
+              <td id="campArea"></td>
+            </tr>
+            <tr>
+              <th scope="row">Venue Address</th>
+              <td id="campVenue"></td>
+            </tr>
+            <tr>
+              <th scope="row">Organizer Category</th>
+              <td id="organizerType"></td>
+            </tr>
+            <tr>
+              <th scope="row">Verification Authority Circular</th>
+              <td id="campVerification" style="color: #1e3a8a; font-weight: 700;"></td>
+            </tr>
+          </tbody>
+        </table>
+      </article>
+
+      <section aria-labelledby="servicesHeading">
+        <div class="card-header-bar" style="margin-top: 2rem;">
+          <h2 id="servicesHeading">Specialty Medical Counters &amp; Schedule</h2>
+          <span class="badge badge-info">Service Timings</span>
+        </div>
+        <p class="lead-text">Inspect the timings and requirements for each counter. Early closing notices are highlighted below.</p>
+        <div id="servicesList"></div>
+      </section>
+    </div>
+
+    <section id="bookingSection" style="display: none; margin-top: 2rem;" aria-labelledby="bookingFormHeading">
+      <div class="card" style="border: 2px solid var(--gov-green);">
+        <div class="card-header-bar">
+          <h2 id="bookingFormHeading">Quick Reserve Consultation Token</h2>
+          <span class="badge badge-approved">Instant Booking</span>
+        </div>
+        <div id="bookingServiceSummary" style="color: var(--gov-text-muted); margin-bottom: 1.25rem; font-weight: 600;"></div>
+
+        <div id="bookingFeedback" role="status" aria-live="polite"></div>
+
+        <form id="bookingForm">
+          <input type="hidden" id="bookingSessionId">
+          <input type="hidden" id="bookingIdempotencyKey">
+
+          <div class="form-row">
+            <div class="form-group">
+              <label for="visitorNameInput">Resident Full Name <span class="req">*</span></label>
+              <input type="text" id="visitorNameInput" name="visitorName" required placeholder="e.g. K. Murugan">
+            </div>
+            <div class="form-group">
+              <label for="visitorPhoneInput">Mobile Phone Number (10 Digits) <span class="req">*</span></label>
+              <input type="tel" id="visitorPhoneInput" name="visitorPhone" required pattern="[0-9]{10}" placeholder="e.g. 9876543210">
+            </div>
+          </div>
+
+          <div class="step-actions">
+            <button type="button" class="btn btn-secondary" id="cancelBookingBtn">Cancel</button>
+            <button type="submit" class="btn btn-primary btn-lg" id="confirmBookingBtn">Confirm Token Reservation →</button>
+          </div>
+        </form>
+      </div>
+    </section>
+
+    <section id="confirmationSection" style="display: none; margin-top: 2rem;" aria-labelledby="confHeading">
+      <div class="official-receipt">
+        <div class="receipt-header">
+          <div class="receipt-org-title">TAMIL NADU COMMUNITY HEALTH INITIATIVE | தமிழ்நாடு அரசு மருத்துவ முகாம்</div>
+          <div class="receipt-portal-title">NALAMCAMP | நலமுகாம்</div>
+          <span class="receipt-doc-name">Appointment Acknowledgment Slip</span>
+        </div>
+
+        <div class="token-highlight-box">
+          <div class="token-highlight-label">Reporting Consultation Token</div>
+          <div class="token-highlight-number" id="confTokenNumber">-</div>
+          <div class="token-highlight-sub" id="confStatus">CONFIRMED &bull; AUTHORIZED</div>
+        </div>
+
+        <div class="barcode-strip" aria-hidden="true"></div>
+
+        <table class="detail-table" aria-label="Confirmed Token Particulars">
+          <tbody>
+            <tr>
+              <th scope="row">Booking Reference</th>
+              <td id="confReference" style="font-weight: 700; font-family: monospace;"></td>
+            </tr>
+            <tr>
+              <th scope="row">Service Counter</th>
+              <td id="confServiceName"></td>
+            </tr>
+            <tr>
+              <th scope="row">Designated Reporting Window</th>
+              <td id="confReportingWindow" style="font-weight: 700; color: var(--gov-green);"></td>
+            </tr>
+            <tr>
+              <th scope="row">Venue Address</th>
+              <td id="confVenue"></td>
+            </tr>
+            <tr>
+              <th scope="row">Items to Bring</th>
+              <td id="confInstructions"></td>
+            </tr>
+          </tbody>
+        </table>
+
+        <div class="receipt-footer">
+          Please arrive 15 minutes before your reporting window with the required items. You can view or cancel your token on the My Token page using your reference.
+        </div>
+      </div>
+
+      <div class="btn-group" style="justify-content: center; margin-top: 1.5rem;">
+        <button type="button" class="btn btn-primary btn-lg" id="btnPrintConf">🖨️ Print Slip / அச்சிடுக</button>
+        <a href="token.html" class="btn btn-secondary btn-lg" id="btnGoToMyToken">Check Status in My Token</a>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+      <div class="footer-grid">
+        <div class="footer-col">
+          <h4>NalamCamp | நலமுகாம்</h4>
+          <p>Public community medical camp monitoring, authorized poster verification, and token management portal for Tamil Nadu.</p>
+        </div>
+        <div class="footer-col">
+          <h4>Citizen Services</h4>
+          <ul>
+            <li><a href="index.html">Find a Camp</a></li>
+            <li><a href="booking.html">Book Online Token</a></li>
+            <li><a href="token.html">Check Token Status &amp; Slip</a></li>
+            <li><a href="poster-check.html">Verify Medical Poster</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h4>Department Portals</h4>
+          <ul>
+            <li><a href="staff.html">Camp Organizer Desk</a></li>
+            <li><a href="staff.html">Health Officer Scrutiny</a></li>
+            <li><a href="staff.html">Camp Reception Check-in</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h4>Emergency &amp; Help</h4>
+          <ul>
+            <li>Medical Helpline: <strong>104</strong></li>
+            <li>Ambulance Service: <strong>108</strong></li>
+            <li>Disability Helpline: <strong>155355</strong></li>
+          </ul>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        &copy; 2026 NalamCamp | நலமுகாம். Designed for community public health oversight in Tamil Nadu.
+      </div>
+    </div>
+  </footer>
+
+  <script src="js/api.js"></script>
+  <script src="js/camp-details.js"></script>
+</body>
+</html>

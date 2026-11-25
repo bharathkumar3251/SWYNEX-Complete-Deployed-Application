@@ -64,6 +64,14 @@ public class CampSessionController {
         }
     }
 
+    @DeleteMapping("/services/{sessionId}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void deleteSession(
+            @PathVariable("sessionId") Long sessionId,
+            HttpServletRequest httpRequest) {
+        sessionService.deleteSession(sessionId, httpRequest);
+    }
+
     public record SessionResponse(
             Long id,
             String serviceName,

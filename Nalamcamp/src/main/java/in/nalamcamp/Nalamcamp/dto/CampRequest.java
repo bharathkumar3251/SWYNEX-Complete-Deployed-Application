@@ -1,5 +1,6 @@
 package in.nalamcamp.Nalamcamp.dto;
 
+import com.fasterxml.jackson.annotation.JsonAlias;
 import jakarta.validation.constraints.FutureOrPresent;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -11,6 +12,7 @@ public record CampRequest(
 
         @NotBlank(message = "Camp name is required")
         @Size(max = 255, message = "Camp name must be 255 characters or fewer")
+        @JsonAlias({"campName", "name"})
         String name,
 
         @Size(max = 255, message = "Organizer name must be 255 characters or fewer")

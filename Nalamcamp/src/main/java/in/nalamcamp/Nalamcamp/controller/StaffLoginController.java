@@ -6,6 +6,7 @@ import in.nalamcamp.Nalamcamp.service.StaffService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.http.HttpStatus;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -47,6 +48,7 @@ public class StaffLoginController {
     }
 
     @GetMapping("/me")
+    @Transactional(readOnly = true)
     public CurrentStaffResponse currentStaff(HttpServletRequest request) {
         HttpSession session = request.getSession(false);
 

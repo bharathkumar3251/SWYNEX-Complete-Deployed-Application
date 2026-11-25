@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NalamCamp | நலமுகாம் — Tamil Nadu Public Medical Camp Portal</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <div class="gov-top-bar">
+    <div class="gov-top-inner">
+      <div class="gov-initiative">GOVERNMENT OF TAMIL NADU INITIATIVE | தமிழ்நாடு அரசு முன்னெடுப்பு</div>
+      <div class="gov-utility-links">
+        <span class="gov-clock" id="govClock"></span>
+        <button type="button" class="gov-utility-btn" id="btnTextNormal" title="Normal text">A</button>
+        <button type="button" class="gov-utility-btn" id="btnTextLarge" title="Large text">A+</button>
+        <button type="button" class="gov-utility-btn" id="btnTextXLarge" title="Extra large text">A++</button>
+        <button type="button" class="gov-utility-btn" id="btnContrast" title="Toggle high contrast">Contrast</button>
+      </div>
+    </div>
+  </div>
+
+  <header class="gov-masthead">
+    <div class="gov-masthead-inner">
+      <a href="index.html" class="gov-brand">
+        <div class="gov-emblem">ந</div>
+        <div class="gov-brand-titles">
+          <span class="gov-title-en">NALAMCAMP PORTAL</span>
+          <span class="gov-title-ta">நலமுகாம் பொது மருத்துவ சேவை தளம்</span>
+          <span class="gov-sub-title">Public Medical Camp Verification &amp; Citizen Token System</span>
+        </div>
+      </a>
+      <div class="gov-helpline-box">
+        <div class="helpline-item">
+          <span class="helpline-label">Medical Helpline</span>
+          <span class="helpline-number">104</span>
+        </div>
+        <div class="helpline-item">
+          <span class="helpline-label">Emergency Ambulance</span>
+          <span class="helpline-number">108</span>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <nav class="gov-nav-bar" aria-label="Main Navigation">
+    <div class="gov-nav-inner">
+      <a href="index.html" class="active">Home / முகப்பு</a>
+      <a href="booking.html">Book Token (Step-by-Step) / முன்பதிவு</a>
+      <a href="token.html">My Token / ரசீது</a>
+      <a href="poster-check.html">Verify Poster / சுவரொட்டி சரிபார்ப்பு</a>
+      <a href="staff.html">Staff Login / துறை உள்நுழைவு</a>
+    </div>
+  </nav>
+
+  <div class="gov-ticker">
+    <div class="gov-ticker-inner">
+      <span class="ticker-tag">Notice</span>
+      <span>All community health camps listed on NalamCamp undergo public health scrutiny and circular verification. Consultation is 100% free.</span>
+    </div>
+  </div>
+
+  <div class="breadcrumbs">
+    <span>Home</span> &gt; <span class="current">Find Approved Medical Camps</span>
+  </div>
+
+  <main>
+    <h1>Find an Approved Medical Camp</h1>
+    <p class="lead-text">Search community health camps across Tamil Nadu, verify counter operating hours, and book online consultation tokens.</p>
+
+    <div class="stats-grid">
+      <div class="stat-box">
+        <div class="stat-num" id="statCampCount">-</div>
+        <div class="stat-label">Approved Medical Camps</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-num" id="statServiceCount">-</div>
+        <div class="stat-label">Active Specialty Counters</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-num">100% Free</div>
+        <div class="stat-label">Zero Consultation Fees</div>
+      </div>
+    </div>
+
+    <section class="filter-box" aria-labelledby="filterHeading">
+      <h2 id="filterHeading" style="font-size: 1.15rem; margin-bottom: 0.85rem;">Search and Filter Medical Camps</h2>
+      <form id="filterForm">
+        <div class="form-row">
+          <div class="form-group">
+            <label for="areaInput">District / Locality</label>
+            <input type="text" id="areaInput" name="area" placeholder="e.g. Salem, Coimbatore, Tirunelveli">
+          </div>
+          <div class="form-group">
+            <label for="dateInput">Date of Camp</label>
+            <input type="date" id="dateInput" name="date">
+          </div>
+          <div class="form-group">
+            <label for="serviceInput">Specialty Service</label>
+            <input type="text" id="serviceInput" name="service" placeholder="e.g. Eye, Dental, Diabetes, General">
+          </div>
+          <div class="btn-group" style="align-self: flex-end; margin-bottom: 1rem;">
+            <button type="submit" class="btn btn-primary" id="searchBtn">🔍 Search Camps</button>
+            <button type="button" class="btn btn-secondary" id="clearBtn">Clear Filters</button>
+          </div>
+        </div>
+      </form>
+    </section>
+
+    <section aria-labelledby="resultsHeading">
+      <div class="card-header-bar">
+        <h2 id="resultsHeading">Approved Public Medical Camps</h2>
+        <span id="resultsCount" style="font-size: 0.9rem; color: var(--gov-text-muted); font-weight: 700;"></span>
+      </div>
+
+      <div id="resultsFeedback" role="status" aria-live="polite"></div>
+      <div id="campsList"></div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+      <div class="footer-grid">
+        <div class="footer-col">
+          <h4>NalamCamp | நலமுகாம்</h4>
+          <p>Public community medical camp monitoring, authorized poster verification, and token management portal for Tamil Nadu.</p>
+        </div>
+        <div class="footer-col">
+          <h4>Citizen Services</h4>
+          <ul>
+            <li><a href="index.html">Find a Camp</a></li>
+            <li><a href="booking.html">Book Online Token</a></li>
+            <li><a href="token.html">Check Token Status &amp; Slip</a></li>
+            <li><a href="poster-check.html">Verify Medical Poster</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h4>Department Portals</h4>
+          <ul>
+            <li><a href="staff.html">Camp Organizer Desk</a></li>
+            <li><a href="staff.html">Health Officer Scrutiny</a></li>
+            <li><a href="staff.html">Camp Reception Check-in</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h4>Emergency &amp; Help</h4>
+          <ul>
+            <li>Medical Helpline: <strong>104</strong></li>
+            <li>Ambulance Service: <strong>108</strong></li>
+            <li>Disability Helpline: <strong>155355</strong></li>
+          </ul>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        &copy; 2026 NalamCamp | நலமுகாம். Designed for community public health oversight in Tamil Nadu.
+      </div>
+    </div>
+  </footer>
+
+  <script src="js/api.js"></script>
+  <script src="js/camps.js"></script>
+</body>
+</html>
