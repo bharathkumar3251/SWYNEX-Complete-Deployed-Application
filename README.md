@@ -1,114 +1,113 @@
 # NalamCamp
 
-NalamCamp is a Spring Boot backend for finding medical camps, checking camp posters against approved records, and reserving tokens for individual services.
+NalamCamp helps residents in Tamil Nadu find approved medical camps, check the details on a forwarded poster, and reserve a token for a specific service counter. Before travelling, residents can check when their counter closes, whether walk-ins are allowed, what the visit costs, and what they need to bring.
 
-A camp may run from 9 a.m. to 1 p.m., while its eye check-up counter closes at 11 a.m. NalamCamp stores the timings, fees, items to bring, and booking limits for each counter separately. Residents can check those details before travelling.
-
-## Internship work
-
-I built NalamCamp as part of my internship at SWYNEX Technologies. Task 1 covered the project architecture and API design. For Task 2, I implemented the REST APIs, connected them to MySQL, and tested the workflow using Postman.
+**[Visit NalamCamp](https://nalamcamp-intern.vercel.app/)**
 
 ## How it works
 
-1. An organizer creates a draft camp and adds service counters. Each counter can accept online bookings, walk-ins, or both.
-2. A reviewer checks the camp details and records a verification source before approving it. The reviewer can also return the camp for corrections.
-3. Residents search approved camps by area, date, or service. They can also upload a poster and compare its details with an approved camp.
-4. A resident books a counter and receives a token number, a private booking reference, a reporting window, and instructions.
-5. On camp day, a volunteer checks in the token or registers a walk-in. The attendance summary shows the camp’s totals.
+1. An **organizer** creates a camp and adds counters such as eye check-up, dental screening, or general consultation. Each counter has its own hours, fee, instructions, and token limit.
+2. A **reviewer** checks the camp details against an official source or organizer confirmation. Once approved, the camp appears in the public directory.
+3. A **resident** searches by area, date, or service, selects a counter, and books an available token. The confirmation includes a booking reference, token number, venue, and reporting window.
+4. On camp day, a **volunteer** checks in booked visitors and registers walk-ins at eligible counters. Residents can retrieve their booking through **My Token**.
 
-## Backend stack
+## Poster verification
+
+Residents can upload an English or Tamil camp poster. Tesseract OCR extracts the text, and the resident can correct any reading errors before checking it.
+
+NalamCamp compares the camp name, date, venue, and organizer with approved records. It shows matching details and flags differences. When multiple records match equally well or there is too little information, the result is **Unable to confirm**. The poster can then be submitted for manual review.
+
+A match confirms that the submitted details agree with an approved listing. Image authorship is outside the scope of this check.
+
+## Service-wise booking
+
+Each counter supports online booking, walk-ins, or both. If the eye check-up counter fills up, residents can still book another counter with available places. A token reserves a place within the counter’s reporting window.
+
+- **Last-token handling:** The backend locks the selected counter row in MySQL while it creates the booking and updates availability. Two simultaneous requests cannot take the same final place.
+- **Booking retries:** The frontend preserves the request key. If a reservation succeeded before the visitor received a response, retrying with the same key retrieves that booking.
+- **Cancellation:** Cancelling an online reservation releases its place back to the counter.
+- **Attendance:** Staff can look up a booking by reference or token number. A second check-in is flagged with the existing check-in time.
+
+## Technology stack
 
 | Component | Technology |
-| --- | --- |
-| Language and framework | Java 17, Spring Boot |
-| Database and persistence | MySQL, Spring Data JPA, Hibernate |
+|---|---|
+| Frontend | HTML, CSS, JavaScript |
+| Backend API | Java 17, Spring Boot, Spring MVC |
+| Database | MySQL, Spring Data JPA, Hibernate |
+| Staff access | Session-based login, role checks, encoded passwords |
 | Poster text extraction | Tesseract OCR with English and Tamil language data |
-| Build and testing | Maven Wrapper, JUnit, Postman |
+| Build and testing | Maven Wrapper, Spring Boot integration tests |
+| Deployment | Vercel for the frontend, Docker and Render for the backend |
 
-Requests pass through the controller, service, and repository layers. Controllers handle HTTP requests, services apply the booking and review rules, and repositories read and write MySQL records. The poster service calls Tesseract when an image is uploaded.
+## Project structure
 
-## Booking and poster matching
+The application is inside the `Nalamcamp/` directory.
 
-**Last available token.** If two residents request the final token at the same time, the backend locks the relevant database row while it confirms the booking. One request succeeds and the other receives `409 Conflict`. Retrying a successful request with the same idempotency key and details returns the original booking.
+| Path | Contents |
+|---|---|
+| `src/main/resources/static/` | Frontend pages, stylesheets, JavaScript, and Vercel API routing |
+| `src/main/java/in/nalamcamp/Nalamcamp/` | Spring Boot application and database entities |
+| `controller/` | REST endpoints for camps, counters, bookings, poster checks, staff access, and attendance |
+| `service/` | Approval workflow, booking rules, poster matching, and check-in logic |
+| `repository/` | Database queries and persistence |
+| `dto/` | API request and response models |
+| `src/test/` | Application and integration tests |
+| `Dockerfile` | Backend container build |
+| `pom.xml` | Maven dependencies and build configuration |
 
-**Poster checks.** Tesseract extracts text from a JPEG or PNG poster. The backend compares the camp name, organizer, date, and venue with approved records. If two camps match equally well, the result is `UNABLE_TO_CONFIRM` and the poster can be submitted for manual review.
+The `controller/`, `service/`, `repository/`, and `dto/` packages are inside the Java application package.
 
-**Staff access.** Organizers manage their own camps, reviewers handle approvals, and volunteers record attendance. Staff login uses a session cookie. Residents can search camps and book tokens without a staff account.
+## Run locally
 
-## Run locally on Windows
+Install Java 17 and MySQL. For poster uploads, install Tesseract OCR with the `eng` and `tam` language files.
 
-Install a JDK compatible with Java 17 and start MySQL. Open PowerShell in the folder containing `pom.xml` and `mvnw.cmd`.
+### 1. Clone the project
 
-**1. Create the database**
+```powershell
+git clone https://github.com/bharathkumar3251/SWYNEX-Complete-Deployed-Application.git
+cd .\SWYNEX-Complete-Deployed-Application\Nalamcamp
+```
 
-Run this in MySQL Workbench:
+### 2. Create the database
 
-~~~sql
-CREATE DATABASE IF NOT EXISTS nalamcamp;
-~~~
+Run this in MySQL Workbench or the MySQL command line.
 
-**2. Configure the database connection**
+```sql
+CREATE DATABASE IF NOT EXISTS nalamcamp CHARACTER SET utf8mb4;
+```
 
-Set the datasource URL, username, and password for your local MySQL instance. The application configuration is in `src/main/resources/application.properties`. You can supply the connection details through PowerShell for the current session:
+### 3. Configure the application
 
-~~~powershell
+Set these variables in PowerShell using your local MySQL credentials and Tesseract installation path.
+
+```powershell
 $env:SPRING_DATASOURCE_URL = "jdbc:mysql://127.0.0.1:3306/nalamcamp"
-$env:SPRING_DATASOURCE_USERNAME = "your_mysql_username"
-$env:SPRING_DATASOURCE_PASSWORD = "your_mysql_password"
-~~~
-
-**3. Configure OCR**
-
-Install Tesseract with English (`eng`) and Tamil (`tam`) language data. Adjust the paths below if you chose a different installation folder.
-
-~~~powershell
+$env:SPRING_DATASOURCE_USERNAME = "<your-mysql-username>"
+$env:SPRING_DATASOURCE_PASSWORD = "<your-mysql-password>"
 $env:TESSERACT_PATH = "C:\Program Files\Tesseract-OCR\tesseract.exe"
-$env:TESSDATA_PREFIX = "C:\Program Files\Tesseract-OCR\tessdata"
-& $env:TESSERACT_PATH --list-langs
-~~~
+```
 
-**4. Start the backend**
+### 4. Start NalamCamp
 
-~~~powershell
+```powershell
 .\mvnw.cmd spring-boot:run
-~~~
+```
 
-The API runs at `http://localhost:8080`. To try a public request, send `GET http://localhost:8080/api/camps` from Postman. A fresh database returns an empty list until a reviewer approves a camp.
+Open [localhost:8080](http://localhost:8080/). Spring Boot serves the frontend and API together locally. A fresh database shows an empty directory until an organizer creates a camp and a reviewer approves it. Staff actions require an account with the corresponding role.
 
-## Main API routes
+## Testing
 
-| Method | Route | Purpose |
-| --- | --- | --- |
-| POST | `/api/sessions` | Sign in as a staff member |
-| GET | `/api/sessions/me` | Check the current staff session |
-| DELETE | `/api/sessions` | Sign out |
-| POST | `/api/camps` | Create a draft camp |
-| POST | `/api/camps/{id}/services` | Add a service counter |
-| POST | `/api/camps/{id}/submit` | Submit a camp for review |
-| PATCH | `/api/camps/{id}/review` | Approve a camp or return it for corrections |
-| GET | `/api/camps` | Search public camps by area, date, or service |
-| GET | `/api/camps/{id}` | View a camp and its counters |
-| POST | `/api/services/{id}/bookings` | Reserve a token |
-| GET | `/api/bookings/{reference}` | Look up a booking |
-| DELETE | `/api/bookings/{reference}` | Cancel a booking |
-| PATCH | `/api/bookings/{token}/check-in` | Record attendance for a booked token |
-| POST | `/api/services/{id}/walk-ins` | Register a walk-in |
-| GET | `/api/camps/{id}/attendance` | View attendance totals |
-| POST | `/api/poster-checks` | Upload a poster for text extraction |
-| POST | `/api/poster-checks/{id}/match` | Compare poster details with approved camps |
+The integration tests create records. Configure a dedicated local test database before running the suite.
 
-## Test with Postman
-
-Import `NalamCamp.postman_collection.json` and set `baseUrl` to `http://localhost:8080`. Use local staff accounts for the organizer, reviewer, and volunteer requests.
-
-Follow one camp through the collection: create it as an organizer, add two counters, submit it, approve it as a reviewer, then search for it as a resident. Book one counter and use the returned `bookingReference` for lookup. For volunteer check-in, use the `tokenNumber`.
-
-## Automated tests
-
-With the test database connection configured, run:
-
-~~~powershell
+```powershell
 .\mvnw.cmd verify
-~~~
+```
 
-The Task 2 build passed all 12 automated tests on two consecutive runs. The suite covers the camp review lifecycle, access control, last-token booking, booking retries, cancellation, duplicate check-in, and poster matching.
+The tests cover competing requests for the last token, booking retries, cancellation and capacity release, duplicate check-in prevention, poster discrepancies, and ambiguous poster matches.
+
+## Deployment
+
+The live frontend runs on Vercel. Requests under `/api/` are forwarded to the Spring Boot backend on Render, which reads and writes camp records in the hosted MySQL database. Database credentials are configured in the backend environment.
+
+[Live application](https://nalamcamp-intern.vercel.app/) · [Public camps API](https://nalamcamp-intern.vercel.app/api/camps)
